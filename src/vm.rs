@@ -1,7 +1,7 @@
 use crate::instruction::RegisterIndex;
 
-use super::value::{Value, VALUE_BYTES};
 use super::instruction::{Instruction, INSTRUCTION_BYTES};
+use super::value::{Value, VALUE_BYTES};
 
 struct VM {
     registers: Vec<Value>,
@@ -14,23 +14,38 @@ impl VM {
 
         loop {
             match instruction_iter.next() {
+                Some(Instruction::Not(r1, r2)) => {
+                    let b1 = self.get_bool(*r1);
+                    let b2 = Value::Bool(!b1);
+                    self.registers[*r2 as usize] = b2;
+                    println!("NOT({} <- r{}) = {} -> r{}", b1, *r1, b2, *r2);
+                }
                 Some(Instruction::And(r1, r2, r3)) => {
-                    println!("AND {} {} -> {}", r1, r2, r3);
                     let b1 = self.get_bool(*r1);
                     let b2 = self.get_bool(*r2);
-                    self.registers[*r3 as usize] = Value::Bool(b1 && b2);
-                },
+                    let b3 = Value::Bool(b1 && b2);
+                    self.registers[*r3 as usize] = b3;
+                    println!(
+                        "AND({} <- r{}, {} <- r{}) = {} -> r{}",
+                        b1, *r1, b2, *r2, b3, *r3
+                    );
+                }
                 Some(Instruction::Or(r1, r2, r3)) => {
-                    println!("OR {} {} -> {}", r1, r2, r3);
                     let b1 = self.get_bool(*r1);
                     let b2 = self.get_bool(*r2);
-                    self.registers[*r3 as usize] = Value::Bool(b1 || b2);
-                },
+                    let b3 = Value::Bool(b1 || b2);
+                    self.registers[*r3 as usize] = b3;
+                    println!(
+                        "OR({} <- r{}, {} <- r{}) = {} -> r{}",
+                        b1, *r1, b2, *r2, b3, *r3
+                    );
+                }
                 Some(Instruction::Return(r1)) => {
-                    println!("RETURN {}", r1);
-                    break self.registers[(*r1) as usize]
-                },
-                None => panic!("No more instructions!")
+                    let v1 = self.registers[(*r1) as usize];
+                    println!("RETURN({} <- r{})", v1, *r1);
+                    break v1;
+                }
+                None => panic!("No more instructions!"),
             }
         }
     }
@@ -38,7 +53,7 @@ impl VM {
     fn get_bool(&self, index: RegisterIndex) -> bool {
         match self.registers[index as usize] {
             Value::Bool(b) => b,
-            _ => panic!("Not a bool!")
+            _ => panic!("Not a bool!"),
         }
     }
 }
@@ -52,7 +67,7 @@ pub fn exec(bytecode: &[u8]) -> Value {
     for r in 0..num_registers {
         registers.push(Value::from_bytes(bytecode_iterator.as_slice()));
         println!("  r{} = {}", r, registers[r as usize]);
-        
+
         // TODO: advance_by?
         for _ in 0..VALUE_BYTES {
             bytecode_iterator.next();
@@ -77,6 +92,9 @@ pub fn exec(bytecode: &[u8]) -> Value {
         panic!("Too many bytes!")
     };
 
-    let vm = VM { registers, instructions };
+    let vm = VM {
+        registers,
+        instructions,
+    };
     return vm.run();
 }

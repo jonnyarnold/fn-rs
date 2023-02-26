@@ -13,7 +13,8 @@ fn main() {
     let r1 = builder.add_register(Value::Bool(false));
     let r2 = builder.add_register(Value::Bool(true));
 
-    builder.add_instruction(Instruction::Or(r1, r2, r1));
+    builder.add_instruction(Instruction::Not(r1, r1));
+    builder.add_instruction(Instruction::And(r1, r2, r1));
     builder.add_instruction(Instruction::Return(r1));
 
     let bytecode = builder.into_bytes();
