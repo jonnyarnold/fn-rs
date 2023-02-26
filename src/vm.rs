@@ -40,6 +40,15 @@ impl VM {
                         b1, *r1, b2, *r2, b3, *r3
                     );
                 }
+                Some(Instruction::Negate(r1, r2)) => {
+                    let n1 = self.get_i32(*r1);
+                    let n2 = -n1;
+                    self.registers[*r2 as usize] = Value::Integer(n2);
+                    println!(
+                        "NEGATE({} <- r{}) = {} -> r{}",
+                        n1, *r1, n2, *r2
+                    );
+                }
                 Some(Instruction::Return(r1)) => {
                     let v1 = self.registers[(*r1) as usize];
                     println!("RETURN({} <- r{})", v1, *r1);
@@ -54,6 +63,13 @@ impl VM {
         match self.registers[index as usize] {
             Value::Bool(b) => b,
             _ => panic!("Not a bool!"),
+        }
+    }
+
+    fn get_i32(&self, index: RegisterIndex) -> i32 {
+        match self.registers[index as usize] {
+            Value::Integer(n) => n,
+            _ => panic!("Not a number!"),
         }
     }
 }

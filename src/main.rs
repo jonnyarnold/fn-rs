@@ -1,4 +1,7 @@
+extern crate ux;
+
 mod bytecode;
+mod d56;
 mod instruction;
 mod value;
 mod vm;
@@ -10,15 +13,12 @@ use vm::exec;
 
 fn main() {
     let mut builder = BytecodeBuilder::new();
-    let r1 = builder.add_register(Value::Bool(false));
-    let r2 = builder.add_register(Value::Bool(true));
+    let r1 = builder.add_register(Value::Integer(1));
 
-    builder.add_instruction(Instruction::Not(r1, r1));
-    builder.add_instruction(Instruction::And(r1, r2, r1));
+    builder.add_instruction(Instruction::Negate(r1, r1));
     builder.add_instruction(Instruction::Return(r1));
 
     let bytecode = builder.into_bytes();
-    println!("{:#?}", bytecode);
 
     let value = exec(&bytecode);
     println!("{}", value);
