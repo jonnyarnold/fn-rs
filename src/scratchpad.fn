@@ -1,0 +1,39 @@
+fib: (n: Positive Integer) -> when {
+  n = 0: 0
+  n = 1: 1
+  else:  fib(n-1) + fib(n-2)
+}
+
+print fib(19)
+
+---
+c1: FUNCTION(self, arguments=1, registers=2):
+  c1: CONST 0
+  c2: CONST 1
+  c3: CONST 2
+
+  # n: Positive Integer
+  ...
+
+  # n = 0: 0
+  EQ(a1, c1) -> r1
+  TRUE_BLOCK(r1):
+    RETURN c1
+  
+  # n = 1: 1
+  EQ(a1, c2) -> r1
+  TRUE_BLOCK(r1):
+    RETURN c2
+  
+  # else: fib(n-1) + fib(n-2)
+  SUBTRACT(a1, c2) -> r1
+  CALL(self, r1) -> r1
+  SUBTRACT(a1, c3) -> r2
+  CALL(self, r2) -> r2
+  ADD(r1, r2) -> r1
+  RETURN r1
+c2: CONST 19
+
+CALL(c1, c2) -> r1
+PRINT(r1)
+RETURN 
