@@ -38,13 +38,11 @@ impl VM {
 
             match self.chunk.ops[self.op_pointer] {
                 Op::Return => {
-                    let value = self.pop_value();
-                    println!("{}", value);
+                    println!("{}", self.pop_value());
                     return InterpretResult::OK;
                 }
                 Op::Constant(i) => {
-                    let value = self.chunk.get_constant(i);
-                    self.push_value(value);
+                    self.push_value(self.chunk.get_constant(i));
                 }
             }
 
