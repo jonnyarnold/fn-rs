@@ -16,7 +16,7 @@ impl Display for Op {
 }
 
 pub struct Chunk {
-    ops: Vec<Op>,
+    pub ops: Vec<Op>,
     constants: Vec<Value>,
     lines: Vec<usize>,
 }
@@ -40,6 +40,10 @@ impl Chunk {
         self.constants.push(value);
         return new_constant_index;
     }
+
+    pub fn get_constant(&self, index: usize) -> Value {
+        return self.constants[index];
+    }
 }
 
 impl Display for Chunk {
@@ -58,7 +62,7 @@ impl Display for Chunk {
             write!(f, "{:04} {}", op_index, op)?;
 
             match op {
-                Op::Constant(i) => write!(f, " [{}]", self.constants[*i])?,
+                Op::Constant(i) => write!(f, " [{}]", self.get_constant(*i))?,
                 _ => {}
             };
             write!(f, "\n")?;
