@@ -3,6 +3,11 @@ use std::fmt::{Display, Formatter};
 
 pub enum Op {
     Constant(usize),
+    Negate,
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
     Return,
 }
 
@@ -10,6 +15,11 @@ impl Display for Op {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Constant(i) => write!(f, "CONST {}", i),
+            Self::Negate => write!(f, "NEGATE"),
+            Self::Add => write!(f, "ADD"),
+            Self::Subtract => write!(f, "SUBTRACT"),
+            Self::Multiply => write!(f, "MULTIPLY"),
+            Self::Divide => write!(f, "DIVIDE"),
             Self::Return => write!(f, "RETURN"),
         }
     }

@@ -29,22 +29,48 @@ impl VM {
     pub fn run(mut self) -> InterpretResult {
         loop {
             if DEBUG_EXECUTION {
-                print!("≡ ");
+                print!("≡");
                 for value in self.stack.iter() {
-                    print!("{}", value);
+                    print!(" {}", value);
                 }
                 println!("\n▶ {}", self.chunk.ops[self.op_pointer]);
             }
 
             match self.chunk.ops[self.op_pointer] {
-                Op::Return => {
-                    let value = self.pop_value();
-                    println!("{}", value);
-                    return InterpretResult::OK;
-                }
                 Op::Constant(i) => {
-                    let value = self.chunk.get_constant(i);
+                    self.push_value(self.chunk.get_constant(i));
+                }
+                Op::Negate => {
+                    let value = -1.0 * self.pop_value();
                     self.push_value(value);
+                }
+                Op::Add => {
+                    let right = self.pop_value();
+                    let left = self.pop_value();
+                    let result = left + right;
+                    self.push_value(result);
+                }
+                Op::Subtract => {
+                    let right = self.pop_value();
+                    let left = self.pop_value();
+                    let result = left - right;
+                    self.push_value(result);
+                }
+                Op::Multiply => {
+                    let right = self.pop_value();
+                    let left = self.pop_value();
+                    let result = left * right;
+                    self.push_value(result);
+                }
+                Op::Divide => {
+                    let right = self.pop_value();
+                    let left = self.pop_value();
+                    let result = left / right;
+                    self.push_value(result);
+                }
+                Op::Return => {
+                    println!("{}", self.pop_value());
+                    return InterpretResult::OK;
                 }
             }
 
@@ -59,6 +85,9 @@ impl VM {
 
     fn pop_value(&mut self) -> Value {
         self.stack_top -= 1;
-        return self.stack[self.stack_top];
+        return self
+            .stack
+            .pop()
+            .expect("pop_value() called on empty stack!");
     }
 }
